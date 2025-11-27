@@ -1,7 +1,7 @@
 [project]
-name = "my-python-utils"
+name = "my_python_utils"
 version = "0.1.0"
-description = "Add your description here"
+description = "自作のpythonユーティリティライブラリ"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
