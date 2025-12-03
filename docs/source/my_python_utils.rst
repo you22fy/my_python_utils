@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    my_python_utils.decorators
+   my_python_utils.traces
 
 Module contents
 ---------------
