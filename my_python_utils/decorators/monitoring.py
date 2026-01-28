@@ -1,16 +1,17 @@
+import os
 import traceback
 import time
 import requests
 from functools import wraps
 from typing import Callable, Literal
 
-def monitoring(platform: Literal["discord", "teams"], webhook_url: str) -> Callable:
+def monitoring(platform: Literal["discord", "teams"], webhook_url: str | None = None) -> Callable:
     """
     関数の実行時間の計測と実行・失敗状況を監視するデコレータ。
     処理終了時およびエラー時に指定されたプラットフォームへ通知を送信する。
     Args:
         platform: 通知先のプラットフォーム. "discord" または "teams" を指定。
-        webhook_url: 通知先のWebhook URL.
+        webhook_url: 通知先のWebhook URL. Noneの場合はDiscordの場合はDISCORD_WEBHOOK_URL, Teamsの場合はTEAMS_WEBHOOK_URLを環境変数から読み取り使用される.
     Example:
         ```python
         @monitoring(platform="discord", webhook_url="~~~discord_webhook_url~~~")
@@ -27,6 +28,12 @@ def monitoring(platform: Literal["discord", "teams"], webhook_url: str) -> Calla
         ```
 
     """
+    if webhook_url is None:
+        if platform == "discord":
+            webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
+        elif platform == "teams":
+            webhook_url = os.getenv("TEAMS_WEBHOOK_URL")
+
     def _send_discord_message(message: str):
         requests.post(webhook_url, json={"content": message})
 
@@ -58,7 +65,7 @@ def monitoring(platform: Literal["discord", "teams"], webhook_url: str) -> Calla
         "discord": _send_discord_message,
         "teams": _send_teams_message,
     }
-    
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -93,5 +100,3 @@ def monitoring(platform: Literal["discord", "teams"], webhook_url: str) -> Calla
                 raise e
         return wrapper
     return decorator
-
- 
