@@ -124,6 +124,21 @@ class Tracer:
         else:
             raise ValueError(f"Unsupported file extension: {suffix}")
 
+    def finish(self, failed: bool = False):
+        """
+        トレース対象処理の終了をマークする。
+        Args:
+            failed: 実行が失敗したかどうか。デフォルトはFalse。
+        Example:
+            ```python
+            tracer.finish()  # 成功時
+            tracer.finish(failed=True)  # 失敗時
+            ```
+        """
+        metrix_path = os.path.join(self.trace_dir, "trace_metrix.json")
+        with open(metrix_path, "w", encoding="utf-8") as f:
+            json.dump({"failed": failed}, f, ensure_ascii=False, indent=2)
+
     # ===============================
     # Private methods
     # ===============================
